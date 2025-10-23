@@ -1,28 +1,140 @@
 # OBSBOT SDK Features List
 
-A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, excluding pan-tilt operations.
+A comprehensive list of all control features available in OBSBOT SDK v2.1.0_7.
 
 ---
 
 ## Table of Contents
 
-1. [Zoom Control](#1-zoom-control)
-2. [Focus Control](#2-focus-control)
-3. [AI Tracking Modes](#3-ai-tracking-modes)
-4. [Camera Settings](#4-camera-settings)
-5. [FOV (Field of View) Settings](#5-fov-field-of-view-settings)
-6. [Preset Positions](#6-preset-positions)
-7. [HDR/WDR Settings](#7-hdrwdr-settings)
-8. [Media Modes](#8-media-modes)
-9. [Gimbal Control Modes](#9-gimbal-control-modes)
-10. [Device Status Queries](#10-device-status-queries)
-11. [Gesture Control](#11-gesture-control)
-12. [Voice Control](#12-voice-control)
-13. [Other Configuration Features](#13-other-configuration-features)
+1. [Pan-Tilt Control](#1-pan-tilt-control)
+2. [Gimbal Control](#2-gimbal-control)
+3. [Zoom Control](#3-zoom-control)
+4. [Focus Control](#4-focus-control)
+5. [AI Tracking Modes](#5-ai-tracking-modes)
+6. [Camera Settings](#6-camera-settings)
+7. [FOV (Field of View) Settings](#7-fov-field-of-view-settings)
+8. [Preset Positions](#8-preset-positions)
+9. [HDR/WDR Settings](#9-hdrwdr-settings)
+10. [Media Modes](#10-media-modes)
+11. [Device Status Queries](#11-device-status-queries)
+12. [Gesture Control](#12-gesture-control)
+13. [Voice Control](#13-voice-control)
+14. [Other Configuration Features](#14-other-configuration-features)
 
 ---
 
-## 1. Zoom Control
+## 1. Pan-Tilt Control
+
+### Relative Movement Control
+
+#### `cameraSetPanTiltRelative(double pan_speed, double tilt_speed)`
+- **Purpose**: Set relative movement speed of video preview in pan and tilt axes
+- **Parameters**:
+  - `pan_speed`: Pan speed, range: -1.0 to 1.0
+  - `tilt_speed`: Tilt speed, range: -1.0 to 1.0
+- **Supported Products**: Meet, Meet4K, Meet2, MeetSE
+
+### Absolute Position Control
+
+#### `cameraSetPanTiltAbsolute(double pan_deg, double tilt_deg)`
+- **Purpose**: Set absolute movement position of video preview in pan and tilt axes
+- **Parameters**:
+  - `pan_deg`: Pan angle, range: -1.0 to 1.0
+  - `tilt_deg`: Tilt angle, range: -1.0 to 1.0
+- **Supported Products**: Meet, Meet4K, Meet2, MeetSE
+
+---
+
+## 2. Gimbal Control
+
+### Gimbal Speed Control
+
+#### `aiSetGimbalSpeedCtrlR(double pitch, double pan, double roll)`
+- **Purpose**: Set gimbal rotation speed, can be set to 0 to stop the gimbal
+- **Parameters**:
+  - `pitch`: Pitch speed, range: -90 to 90
+  - `pan`: Pan speed, range: -180 to 180
+  - `roll`: Roll speed, range: -180 to 180 (currently not used)
+- **Note**: When AI smart tracking is enabled, gimbal is always controlled by AI
+- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+
+#### `gimbalSpeedCtrlR(double pitch, double pan, double roll)`
+- **Purpose**: Set gimbal speed (AI tracking must be disabled)
+- **Parameters**:
+  - `pitch`: Pitch speed, range: -90 to 90
+  - `pan`: Pan speed, range: -180 to 180
+  - `roll`: Roll speed, range: -90 to 90 (currently not used, set to 0)
+- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+
+#### `aiSetGimbalStop()`
+- **Purpose**: Stop the gimbal
+- **Supported Products**: Tiny2 series, Tail Air
+
+### Gimbal Position Control
+
+#### `aiSetGimbalMotorAngleR(float pitch, float yaw, float roll)`
+- **Purpose**: Move gimbal to specified motor angle
+- **Parameters**:
+  - `pitch`: Target pitch angle, range: -90 to 90
+  - `yaw`: Target yaw angle, range: -180 to 180
+  - `roll`: Target roll angle, range: -180 to 180 (currently not used, set to 0)
+- **Supported Products**: Tiny2 series, Tail Air
+
+#### `gimbalSetSpeedPositionR(float roll, float pitch, float yaw, float s_roll, float s_pitch, float s_yaw)`
+- **Purpose**: Set gimbal target position and reference speed for moving to target position
+- **Parameters**:
+  - `roll`: Target position for roll (not used)
+  - `pitch`: Target position for pitch, range: -90 to 90
+  - `yaw`: Target position for yaw, range: -120 to 120
+  - `s_roll`: Roll reference speed, range: -90 to 90
+  - `s_pitch`: Pitch reference speed, range: -90 to 90
+  - `s_yaw`: Yaw reference speed, range: -90 to 90
+- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+
+### Gimbal Reset
+
+#### `gimbalRstPosR()` / `aiResetGimbalR()`
+- **Purpose**: Reset gimbal to zero position (center)
+- **Note**: When AI smart tracking is enabled, gimbal is always controlled by AI
+  - Tiny/Tiny4K: Use `aiSetTargetSelectR(false)` to disable AI
+  - Tiny2/Tail Air: Use `cameraSetAiModeU(Device::AiWorkModeNone)` to disable AI
+- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+
+### Gimbal State Retrieval
+
+#### `aiGetGimbalStateR(AiGimbalStateInfo *gim_info, ...)`
+- **Purpose**: Get current gimbal state info synchronously or asynchronously
+- **Return Value**: AiGimbalStateInfo structure (Euler angles, motor angles, angular velocities for roll/pitch/yaw)
+- **Supported Products**: Tiny2 series, Tail Air
+
+#### `gimbalGetAttitudeInfoR(float xyz[3], ...)`
+- **Purpose**: Get gimbal motor angles synchronously or asynchronously
+- **Parameters**: xyz array (receives roll, pitch, pan angles in degrees)
+- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+
+### Gimbal Parameters
+
+#### `aiSetGimbalSpeedR(float speed)`
+- **Purpose**: Set gimbal speed
+- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+
+#### `aiSetGimbalParaR(DevGimbalParaType type, ...)`
+- **Purpose**: Set gimbal function parameters
+- **Parameter Types**:
+  - `PresetSpeed`: Preset speed (Tail Air supported)
+  - `PanGainAdaptive`: Pan gain adaptive
+  - `PanGainValue`: Pan gain custom value
+  - `PitchGainAdaptive`: Pitch gain adaptive
+  - `PitchGainValue`: Pitch gain custom value
+- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+
+#### `aiGetGimbalParaR(DevGimbalParaType type, ...)`
+- **Purpose**: Get gimbal function parameters
+- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+
+---
+
+## 3. Zoom Control
 
 ### Basic Zoom Functions
 
@@ -75,7 +187,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 2. Focus Control
+## 4. Focus Control
 
 ### Auto Focus Modes
 
@@ -127,7 +239,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 3. AI Tracking Modes
+## 5. AI Tracking Modes
 
 ### Tracking Mode Settings
 
@@ -213,7 +325,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 4. Camera Settings
+## 6. Camera Settings
 
 ### Exposure Control
 
@@ -327,7 +439,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 5. FOV (Field of View) Settings
+## 7. FOV (Field of View) Settings
 
 #### `cameraSetFovU(FovType fov_type)`
 - **Purpose**: Set camera FOV (field of view)
@@ -339,7 +451,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 6. Preset Positions
+## 8. Preset Positions
 
 ### Gimbal Presets
 
@@ -383,7 +495,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 7. HDR/WDR Settings
+## 9. HDR/WDR Settings
 
 #### `cameraSetWdrR(int32_t wdr_mode)`
 - **Purpose**: Set WDR/HDR feature
@@ -403,7 +515,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 8. Media Modes
+## 10. Media Modes
 
 ### Media Mode Settings (Meet Products Only)
 
@@ -460,46 +572,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 9. Gimbal Control Modes
-
-### AI Control
-
-#### `aiSetEnabledR(bool enabled)`
-- **Purpose**: Turn AI on/off
-- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
-
-#### `aiSetZoneTrackGimbalEnabledR(bool enabled)`
-- **Purpose**: Disable gimbal auto tracking before setting zone preset positions
-- **Supported Products**: Tiny2 series
-
-### Basic Gimbal Operations
-
-#### `aiResetGimbalR()`
-- **Purpose**: Reset gimbal to zero position (center)
-- **Note**: If AI smart tracking is enabled, gimbal is always controlled by AI
-- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
-
-#### `aiSetGimbalSpeedR(float speed)`
-- **Purpose**: Set gimbal speed
-- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
-
-### Gimbal Parameters
-
-#### `aiSetGimbalParaR(DevGimbalParaType type, ...)`
-- **Purpose**: Set gimbal function parameters
-- **Parameter Types**:
-  - `PresetSpeed`: Preset speed (Tail Air supported)
-  - `PanGainAdaptive`: Pan gain adaptive
-  - `PanGainValue`: Pan gain custom value
-  - `PitchGainAdaptive`: Pitch gain adaptive
-  - `PitchGainValue`: Pitch gain custom value
-
-#### `aiGetGimbalParaR(DevGimbalParaType type, ...)`
-- **Purpose**: Get gimbal function parameters
-
----
-
-## 10. Device Status Queries
+## 11. Device Status Queries
 
 ### Status Retrieval
 
@@ -535,7 +608,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 11. Gesture Control
+## 12. Gesture Control
 
 ### Gesture Features
 
@@ -588,7 +661,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 12. Voice Control
+## 13. Voice Control
 
 ### Voice Commands (Tiny2 Series Only)
 
@@ -609,7 +682,7 @@ A comprehensive list of control features available in OBSBOT SDK v2.1.0_7, exclu
 
 ---
 
-## 13. Other Configuration Features
+## 14. Other Configuration Features
 
 ### Image Flip & Mirror
 
