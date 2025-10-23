@@ -612,9 +612,10 @@ A comprehensive list of all control features available in OBSBOT SDK v2.1.0_7.
 
 ### Gesture Features
 
-#### `aiSetGestureCtrlR(bool flag)`
-- **Purpose**: Turn entire gesture control on/off
-- **Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air
+#### ~~`aiSetGestureCtrlR(bool flag)`~~
+- ~~**Purpose**: Turn entire gesture control on/off~~
+- ~~**Supported Products**: Tiny, Tiny4K, Tiny2 series, Tail Air~~
+- **Just for compatibility, no longer used.**
 
 #### `aiSetGestureCtrlIndividualR(int32_t gesture, bool flag)`
 - **Purpose**: Turn specified gesture feature on/off

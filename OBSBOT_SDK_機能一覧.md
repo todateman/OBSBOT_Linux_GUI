@@ -612,9 +612,10 @@ OBSBOT SDK v2.1.0_7 で利用可能な制御機能の完全なリストです。
 
 ### ジェスチャー機能
 
-#### `aiSetGestureCtrlR(bool flag)`
-- **目的**: ジェスチャーコントロール全体をオン/オフ
-- **対応製品**: Tiny, Tiny4K, Tiny2シリーズ, Tail Air
+#### ~~`aiSetGestureCtrlR(bool flag)`~~
+- ~~**目的**: ジェスチャーコントロール全体をオン/オフ~~
+- ~~**対応製品**: Tiny, Tiny4K, Tiny2シリーズ, Tail Air~~  
+- **互換性目的だが、現在は使用できない**
 
 #### `aiSetGestureCtrlIndividualR(int32_t gesture, bool flag)`
 - **目的**: 指定したジェスチャー機能をオン/オフ
